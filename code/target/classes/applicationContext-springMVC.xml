@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.0.xsd   
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd   
+	http://www.springframework.org/schema/jee 
+	http://www.springframework.org/schema/jee/spring-jee-3.0.xsd   
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+    
+	<!-- 说明：springMVC配置 -->
+	
+	<!-- 设置上传参数和输出参数的数据转化器 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="mappingJacksonHttpMessageConverter"/>
+                <!-- json转换器 -->
+            </list>
+        </property>
+        <property name="webBindingInitializer">
+            <bean class="com.wq.common.web.springmvc.BindingInitializer"/>
+            <!-- 参数渲染绑定 -->
+        </property>
+    </bean>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="mappingJacksonHttpMessageConverter"/>
+                <!-- json转换器 -->
+            </list>
+        </property>
+        <property name="webBindingInitializer">
+            <bean class="com.wq.common.web.springmvc.BindingInitializer"/>
+            <!-- 参数渲染绑定 -->
+        </property>
+    </bean>
+    
+    <!-- 数据输出格式为json -->
+    <bean id="mappingJacksonHttpMessageConverter" class="com.wq.common.web.springmvc.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 所有请求都要经过该控制器，主要设置url地址是“.html”和“.htm”成freemarker可以渲染的路径 -->
+    <bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="defaultHandler" ref="wildcardMVCController"/>
+    </bean>
+	<bean id="wildcardMVCController" class="com.wq.common.web.springmvc.WildcardMVCController"/>
+	
+	<!-- spring mvc全局异常处理 -->
+	<bean class="com.wq.common.web.GlobalExceptionHandler">
+		<property name="contentType" value="${system.contentType}" />
+		<property name="errorUrl" value="/error" />
+	</bean>
+
+</beans>
+    
